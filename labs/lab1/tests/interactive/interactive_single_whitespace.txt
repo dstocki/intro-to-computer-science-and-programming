@@ -1,0 +1,4 @@
+INPUT:
+    
+OUTPUT:
+Input cannot contain whitespaces!

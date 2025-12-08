@@ -29,6 +29,8 @@
 *.dylib
 
 # Executables
+labs/lab1/build
+task1
 *.exe
 *.out
 *.app
