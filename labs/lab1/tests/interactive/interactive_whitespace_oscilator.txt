@@ -1,4 +1,0 @@
-INPUT:
-e a s y o n e
-OUTPUT:
-Input cannot contain whitespaces!

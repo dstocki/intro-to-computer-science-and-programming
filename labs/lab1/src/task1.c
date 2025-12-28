@@ -12,52 +12,55 @@
 #include <string.h>
 #include <ctype.h>
 
-#define BUFFER_MAX_LEN 50
+#define MAX_BUFF_LEN 100
 
-static void printUsage(
-    const char* const progName
+static bool printPrefix(
+    const char* const word,
+    const size_t nChars
 ) {
-    fprintf(stderr, "Usage: %s [-w <word>]\n", progName);
-    fprintf(stderr, "\n");
-    fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -w <word>\tSpecifies a word which is used to print a triangle.\n");
-    fprintf(stderr, "           \tIf omitted, program runs in interactive mode.\n");
-}
+    const size_t maxChars = strlen(word);
+    
+    if (nChars > maxChars)
+        return false;
 
-static void printWord(
-    const char* const w,
-    const size_t l
-) {
-    for (size_t i = 0; i < l; ++i) {
-        printf("%c ", w[i]);
-    }
+    for (size_t i = 0; i < nChars; ++i)
+        printf("%c ", word[i]);
     printf("\n");
+
+    return true;
 }
 
 static void printSpaces(
-    const size_t count
+    const size_t amount
 ) {
-    if (count == 0) return;
-    printf("%*s", (int)count, "");
+    if (amount == 0)
+        return;
+
+    printf("%*s", (int)amount, "");
 }
 
-static void printTriangle(
-    const char* const wordToPrint
+static bool printTriangle(
+    const char* const word
 ) {
-    size_t l = strlen(wordToPrint);
+    size_t nChars = strlen(word);
     
-    for (size_t i = 0; i < l; ++i) {
+    for (size_t i = 0; i < nChars; ++i) {
         printSpaces(i);
-        printWord(wordToPrint, l - i);
+        if (!printPrefix(word, nChars - i))
+            return false;
     }
+
+    return true;
 }
 
-static bool includesWhitespaces(
-    const char* const buff
+static bool hasSpaces(
+    const char* const s
 ) {
-    for (size_t i = 0; buff[i] != '\0'; ++i) {
-        if (isspace((unsigned char)buff[i])) return true;
-    }
+    const size_t nChars = strlen(s);
+
+    for (size_t i = 0; i < nChars; ++i)
+        if (isspace((unsigned char)s[i]))
+            return true;
 
     return false;
 }
@@ -65,91 +68,48 @@ static bool includesWhitespaces(
 static char* dupString(
     const char* s
 ) {
-    const size_t sLen = strlen(s);
-    char* dup = malloc(sLen + 1);
-    if (dup == NULL) {
-        fprintf(stderr, "Failed to allocate memory!\n");
+    const size_t nChars = strlen(s);
+
+    char* dup = malloc(nChars + 1);
+    if (dup == NULL)
         return NULL;
-    }
 
     strcpy(dup, s);
     return dup;
 }
 
 static bool getWord(
-    char** const word,
-    const int argc,
-    const char** const argv,
-    const bool useInteractiveMode
+    char** const word
 ) {
-    if (useInteractiveMode) {
-        printf("Word (confirm with enter): ");
-        fflush(stdout); // Ensures printf finishes before fgets starts
+    char buffer[MAX_BUFF_LEN];
 
-        char buffer[BUFFER_MAX_LEN];
-        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
-            fprintf(stderr, "Failed to read input!\n");
-            return false;
-        }
-        buffer[strcspn(buffer, "\n")] = '\0';
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL)
+        return false;
 
-        if (strlen(buffer) == 0) {
-            fprintf(stderr, "Input cannot be empty!\n");
-            return false;
-        }
+    buffer[strcspn(buffer, "\n")] = '\0';
 
-        if (includesWhitespaces(buffer)) {
-            fprintf(stderr, "Input cannot contain whitespaces!\n");
-            return false;
-        }
+    if (hasSpaces(buffer))
+        return false;
 
-        char* copy = dupString(buffer);
-        if (copy == NULL) return false;
+    char* const copy =
+        dupString(buffer);
 
-        *word = copy;
-    } else {
-        if (argc != 3) {
-            printUsage(argv[0]);
-            return false;
-        }
+    if (copy == NULL)
+        return false;
 
-        if (strcmp(argv[1], "-w") != 0) {
-            printUsage(argv[0]);
-            return false;
-        }
-
-        if (argv[2][0] == '\0') {
-            fprintf(stderr, "Input cannot be empty!\n");
-            return false;
-        }
-
-        if (includesWhitespaces(argv[2])) {
-            fprintf(stderr, "Input cannot contain whitespaces!\n");
-            return false;
-        }
-
-        char* copy = dupString(argv[2]);
-        if (copy == NULL) return false;
-
-        *word = copy;
-    }
-
+    *word = copy;
     return true;
 }
 
 int main(
-    const int argc,
-    const char** const argv
+    void
 ) {
-    const bool useInteractiveMode = (argc == 1);
-    char* wordToPrint = NULL;
-
-    if (!getWord(&wordToPrint, argc, argv, useInteractiveMode)) {
+    char* wordToPrint;
+    if (!getWord(&wordToPrint))
         return EXIT_FAILURE;
-    }
 
-    if (useInteractiveMode) printf("\n");
-    printTriangle(wordToPrint);
+    if (!printTriangle(wordToPrint))
+        return EXIT_FAILURE;
 
     free(wordToPrint);
     return EXIT_SUCCESS;
