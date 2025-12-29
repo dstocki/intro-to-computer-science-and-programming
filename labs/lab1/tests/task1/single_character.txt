@@ -1,0 +1,6 @@
+INPUT:
+e
+RESULT:
+success
+OUTPUT:
+e

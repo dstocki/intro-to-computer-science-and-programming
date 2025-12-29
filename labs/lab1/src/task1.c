@@ -23,9 +23,9 @@ static bool printPrefix(
     if (nChars > maxChars)
         return false;
 
-    for (size_t i = 0; i < nChars; ++i)
+    for (size_t i = 0; i < nChars - 1; ++i)
         printf("%c ", word[i]);
-    printf("\n");
+    printf("%c\n", word[nChars - 1]);
 
     return true;
 }

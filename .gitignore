@@ -30,7 +30,8 @@
 
 # Executables
 labs/lab1/build
-task1
+labs/lab1/build
+labs/lab1/tests/*/logs
 *.exe
 *.out
 *.app

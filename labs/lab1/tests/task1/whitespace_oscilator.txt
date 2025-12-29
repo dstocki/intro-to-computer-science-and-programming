@@ -1,0 +1,5 @@
+INPUT:
+e a s y o n e
+RESULT:
+failure
+OUTPUT:

@@ -1,0 +1,12 @@
+INPUT:
+example
+RESULT:
+success
+OUTPUT:
+e x a m p l e
+ e x a m p l
+  e x a m p
+   e x a m
+    e x a
+     e x
+      e
